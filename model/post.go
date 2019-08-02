@@ -7,5 +7,5 @@ type Post struct {
 	Title string `json:"title"`
 	Date time.Time `json:"posted"`
 	Body string `json:"body"`
-	
+
 }

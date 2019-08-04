@@ -1,9 +1,12 @@
 package repository
 
-import "go-delic-products/model"
+import (
+	"github.com/elastic/go-elasticsearch"
+	"go-delic-products/model"
+)
 
 type PostsRepo interface {
-	Save(post *model.Post) (*model.Post, error)
+	Save(post *model.Post, client *elasticsearch.Client) (*model.Post, error)
 
 	FindById(id string) (*model.Post, error)
 

@@ -13,19 +13,20 @@ import (
 )
 
 type PostElastic struct {
-	Repo elasticsearch.Client
+	Repo *elasticsearch.Client
 }
 
-func (p *PostElastic) Save(post *model.Post, client *elasticsearch.Client) (*model.Post, error) {
+func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, error) {
+
 	jsonPost, _ := json.Marshal(post)
 	request := esapi.IndexRequest{
-		Index:      "posts",
+		Index:      "cheese",
 		DocumentID: uuid.New().String(),
 		Body:       strings.NewReader(string(jsonPost)),
 		Refresh:    "true",
 	}
 
-	res, err := request.Do(context.Background(), client)
+	res, err := request.Do(context.Background(), &c)
 
 	if err != nil {
 		log.Fatal(err)
@@ -34,14 +35,13 @@ func (p *PostElastic) Save(post *model.Post, client *elasticsearch.Client) (*mod
 	defer res.Body.Close()
 
 	if res.IsError() {
-		return &model.Post{}, errors.New("errors during the response")
+		return "", errors.New("errors during the response")
 	} else {
-		var r = model.Post{}
-
+		var r map[string]interface{}
 		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 			log.Printf("Error parsing the response body: %s", err)
 		}
-		return &r, nil
+			return r["_id"].(string), nil
 	}
 
 }

@@ -5,27 +5,35 @@ import (
 	"github.com/elastic/go-elasticsearch"
 	"go-delic-products/elastic"
 	"go-delic-products/model"
+	"io/ioutil"
 	"net/http"
 )
 
-func NewElasticWebHandler(c elasticsearch.Client) *HttpElastic {
-	return &HttpElastic{
-		client: elastic.PostElastic{
+func NewElasticWebHandler(c *elasticsearch.Client) *httpElastic {
+	return &httpElastic{
+		client: &elastic.PostElastic{
 			Repo: c,
 		},
 	}
 }
 
-type HttpElastic struct {
-	client elastic.PostElastic
+type httpElastic struct {
+	client *elastic.PostElastic
 }
 
-func (es *HttpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
-	post := model.Post{}
+func (es *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
+	var post model.Post
 
-	_ = json.NewDecoder(r.Body).Decode(&post)
+	body, _ := ioutil.ReadAll(r.Body)
+	_ = json.Unmarshal(body, &post)
 
-	res, _ := json.Marshal(post)
+	client := elastic.PostElastic{}
+
+	Repo := es.client.Repo
+
+	idSaved, _ := client.Save(&post, *Repo)
+
+	res, _ := json.Marshal(&idSaved)
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type PostsRepo interface {
-	Save(post *model.Post, client *elasticsearch.Client) (*model.Post, error)
+	Save(post *model.Post, c elasticsearch.Client) (string, error)
 
 	FindById(id string) (*model.Post, error)
 

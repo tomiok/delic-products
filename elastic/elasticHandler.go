@@ -41,7 +41,7 @@ func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, er
 		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 			log.Printf("Error parsing the response body: %s", err)
 		}
-			return r["_id"].(string), nil
+		return r["_id"].(string), nil
 	}
 
 }

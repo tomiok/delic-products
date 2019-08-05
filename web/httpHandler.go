@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func newElasticWebHandler(c elasticsearch.Client) *HttpElastic {
+func NewElasticWebHandler(c elasticsearch.Client) *HttpElastic {
 	return &HttpElastic{
 		client: elastic.PostElastic{
 			Repo: c,

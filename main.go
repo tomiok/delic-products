@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/elastic/go-elasticsearch"
 	"github.com/gorilla/mux"
+	"go-delic-products/web"
 	"log"
 	"net/http"
 )
@@ -17,4 +19,6 @@ func main() {
 
 func savePost(writer http.ResponseWriter, request *http.Request) {
 
+	es, _ := elasticsearch.NewDefaultClient()
+	web.NewElasticWebHandler(*es)
 }

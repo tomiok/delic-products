@@ -22,25 +22,28 @@ type httpElastic struct {
 	client *elastic.PostElastic
 }
 
-func (es *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
+func (esHandler *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
 	var post model.Post
 
 	body, _ := ioutil.ReadAll(r.Body)
 	_ = json.Unmarshal(body, &post)
 
-	client := elastic.PostElastic{}
+	postApi := esHandler.client
 
-	Repo := es.client.Repo
+	Repo := postApi.Repo
 
-	idSaved, _ := client.Save(&post, *Repo)
+	idSaved, _ := postApi.Save(&post, *Repo)
 
 	res, _ := json.Marshal(&idSaved)
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
 }
 
-func GetByIdHandler(writer http.ResponseWriter, request *http.Request) {
+func (esHandler *httpElastic) GetByIdHandler(writer http.ResponseWriter, request *http.Request) {
 	id := mux.Vars(request)["id"]
 
 
+	client := esHandler.client
+
+	postApi := client.Repo
 }

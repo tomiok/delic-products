@@ -7,6 +7,9 @@ import (
 )
 
 type PostsRepo interface {
+	/**
+	Return the id of the document indexed
+	 */
 	Save(post *model.Post, c elasticsearch.Client) (string, error)
 
 	FindById(id string, c elasticsearch.Client) (*esapi.Response, error)

@@ -21,7 +21,7 @@ func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, er
 
 	jsonPost, _ := json.Marshal(post)
 	request := esapi.IndexRequest{
-		Index:      p.post.Content,
+		Index:      p.post.GetIndexName(),
 		DocumentID: uuid.New().String(),
 		Body:       strings.NewReader(string(jsonPost)),
 		Refresh:    "true",
@@ -47,9 +47,16 @@ func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, er
 
 }
 
-func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*model.Post, error) {
-	req := esapi.GetRequest{Index: "", DocumentID: id}
-	return nil, nil
+func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*esapi.Response, error) {
+	req := esapi.GetRequest{Index: p.post.GetIndexName(), DocumentID: id}
+
+	res, err := req.Do(context.Background(), &c)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func (p *PostElastic) FindByCriteria(id string, c elasticsearch.Client) (*model.Post, error) {

@@ -14,7 +14,12 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/posts", savePost).Methods(http.MethodPost)
+	router.HandleFunc("/api/posts/{id}", getById).Methods(http.MethodGet)
 	log.Fatal(http.ListenAndServe(port, router))
+}
+
+func getById(writer http.ResponseWriter, request *http.Request) {
+	
 }
 
 func savePost(writer http.ResponseWriter, request *http.Request) {

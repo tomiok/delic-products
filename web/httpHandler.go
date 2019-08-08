@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"github.com/elastic/go-elasticsearch"
+	"github.com/gorilla/mux"
 	"go-delic-products/elastic"
 	"go-delic-products/model"
 	"io/ioutil"
@@ -36,4 +37,9 @@ func (es *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
 	res, _ := json.Marshal(&idSaved)
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
+}
+
+func getByIdHandler(writer http.ResponseWriter, request *http.Request) {
+	id := mux.Vars(request)["id"]
+
 }

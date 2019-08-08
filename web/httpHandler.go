@@ -39,7 +39,8 @@ func (es *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(res)
 }
 
-func getByIdHandler(writer http.ResponseWriter, request *http.Request) {
+func GetByIdHandler(writer http.ResponseWriter, request *http.Request) {
 	id := mux.Vars(request)["id"]
+
 
 }

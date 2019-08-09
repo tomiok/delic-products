@@ -55,5 +55,4 @@ func (esHandler *httpElastic) GetByIdHandler(writer http.ResponseWriter, request
 
 	jsonResponse, _ := json.Marshal(mapResponse)
 	_, _ = writer.Write(jsonResponse)
-
 }

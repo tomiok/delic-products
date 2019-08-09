@@ -22,7 +22,7 @@ func main() {
 }
 
 func findByCriteria(writer http.ResponseWriter, request *http.Request) {
-	
+
 }
 
 func findById(writer http.ResponseWriter, request *http.Request) {

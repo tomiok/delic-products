@@ -8,6 +8,7 @@ import (
 	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/google/uuid"
 	"go-delic-products/model"
+	"io"
 	"log"
 	"strings"
 )
@@ -58,6 +59,12 @@ func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*esapi.Respon
 	return res, nil
 }
 
-func (p *PostElastic) FindByCriteria(id string, c elasticsearch.Client) (*model.Post, error) {
+func (p *PostElastic) FindByCriteria(criteria io.Reader, c elasticsearch.Client) (*esapi.Response, error) {
+	res , _ := c.Search(
+		c.Search.WithContext(context.Background()),
+		c.Search.WithBody(criteria),
+
+	)
+
 	return nil, nil
 }

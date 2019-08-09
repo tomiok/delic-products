@@ -17,18 +17,18 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/posts", savePost).Methods(http.MethodPost)
 	router.HandleFunc("/api/posts/{id}", findById).Methods(http.MethodGet)
+	router.HandleFunc("/api/posts", findByCriteria).Methods(http.MethodGet)
 	log.Fatal(http.ListenAndServe(port, router))
 }
 
-func findById(writer http.ResponseWriter, request *http.Request) {
-	elasticClient := web.NewElasticWebHandler(client)
-	elasticClient.GetByIdHandler(writer, request)
+func findByCriteria(writer http.ResponseWriter, request *http.Request) {
+	
+}
 
+func findById(writer http.ResponseWriter, request *http.Request) {
+	web.NewElasticWebHandler(client).FindById(writer, request)
 }
 
 func savePost(writer http.ResponseWriter, request *http.Request) {
-
-	elasticClient := web.NewElasticWebHandler(client)
-
-	elasticClient.SaveHandler(writer, request)
+	web.NewElasticWebHandler(client).SaveHandler(writer, request)
 }

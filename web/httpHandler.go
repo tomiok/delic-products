@@ -11,8 +11,8 @@ import (
 	"net/http"
 )
 
-func NewElasticWebHandler(esClient *elasticsearch.Client) *httpElastic {
-	return &httpElastic{
+func NewElasticWebHandler(esClient *elasticsearch.Client) httpElastic {
+	return httpElastic{
 		client:   &elastic.PostElastic{},
 		esClient: esClient,
 	}
@@ -23,7 +23,7 @@ type httpElastic struct {
 	esClient *elasticsearch.Client
 }
 
-func (esHandler *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
+func (esHandler httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
 	var post model.Post
 
 	body, _ := ioutil.ReadAll(r.Body)
@@ -33,12 +33,14 @@ func (esHandler *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request
 
 	idSaved, _ := postApi.Save(&post, *esHandler.esClient)
 
-	res, _ := json.Marshal(&idSaved)
+	idResponse := model.IdResponse{Id: idSaved}
+
+	res, _ := json.Marshal(&idResponse)
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
 }
 
-func (esHandler *httpElastic) GetByIdHandler(writer http.ResponseWriter, request *http.Request) {
+func (esHandler httpElastic) FindById(writer http.ResponseWriter, request *http.Request) {
 	id, client := mux.Vars(request)["id"], esHandler.client
 	res, err := client.FindById(id, *esHandler.esClient)
 
@@ -55,4 +57,8 @@ func (esHandler *httpElastic) GetByIdHandler(writer http.ResponseWriter, request
 
 	jsonResponse, _ := json.Marshal(mapResponse)
 	_, _ = writer.Write(jsonResponse)
+}
+
+func (esHandler httpElastic) FindByCriteriaHandler() {
+
 }

@@ -13,7 +13,6 @@ import (
 )
 
 type PostElastic struct {
-	Repo *elasticsearch.Client
 	post model.Post
 }
 

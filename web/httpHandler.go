@@ -7,19 +7,20 @@ import (
 	"go-delic-products/elastic"
 	"go-delic-products/model"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
-func NewElasticWebHandler(c *elasticsearch.Client) *httpElastic {
+func NewElasticWebHandler(esClient *elasticsearch.Client) *httpElastic {
 	return &httpElastic{
-		client: &elastic.PostElastic{
-			Repo: c,
-		},
+		client:   &elastic.PostElastic{},
+		esClient: esClient,
 	}
 }
 
 type httpElastic struct {
-	client *elastic.PostElastic
+	client   *elastic.PostElastic
+	esClient *elasticsearch.Client
 }
 
 func (esHandler *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,9 +31,7 @@ func (esHandler *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request
 
 	postApi := esHandler.client
 
-	Repo := postApi.Repo
-
-	idSaved, _ := postApi.Save(&post, *Repo)
+	idSaved, _ := postApi.Save(&post, *esHandler.esClient)
 
 	res, _ := json.Marshal(&idSaved)
 	w.WriteHeader(http.StatusCreated)
@@ -40,10 +39,21 @@ func (esHandler *httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (esHandler *httpElastic) GetByIdHandler(writer http.ResponseWriter, request *http.Request) {
-	id := mux.Vars(request)["id"]
+	id, client := mux.Vars(request)["id"], esHandler.client
+	res, err := client.FindById(id, *esHandler.esClient)
 
+	mapResponse := make(map[string]interface{})
+	if err != nil {
+		log.Fatal("errors in the response", err)
+	}
 
-	client := esHandler.client
+	body, _ := ioutil.ReadAll(res.Body)
 
-	postApi := client.Repo
+	_ = json.Unmarshal(body, &mapResponse)
+
+	writer.WriteHeader(http.StatusOK)
+
+	jsonResponse, _ := json.Marshal(mapResponse)
+	_, _ = writer.Write(jsonResponse)
+
 }

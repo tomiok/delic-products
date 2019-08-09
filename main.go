@@ -22,8 +22,8 @@ func main() {
 
 func findById(writer http.ResponseWriter, request *http.Request) {
 	elasticClient := web.NewElasticWebHandler(client)
+	elasticClient.GetByIdHandler(writer, request)
 
-	elasticClient
 }
 
 func savePost(writer http.ResponseWriter, request *http.Request) {

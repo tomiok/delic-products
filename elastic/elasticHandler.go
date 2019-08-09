@@ -56,15 +56,35 @@ func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*esapi.Respon
 		return nil, err
 	}
 
+	if res.IsError() {
+		log.Fatal("error parsing response")
+	}
+
+	defer res.Body.Close()
 	return res, nil
 }
 
 func (p *PostElastic) FindByCriteria(criteria io.Reader, c elasticsearch.Client) (*esapi.Response, error) {
-	res , _ := c.Search(
+	res , err := c.Search(
 		c.Search.WithContext(context.Background()),
 		c.Search.WithBody(criteria),
-
+		c.Search.WithIndex(),
+		c.Search.WithPretty(),
+		c.Search.WithStats(),
+		c.Search.WithRestTotalHitsAsInt(true),
+		c.Search.WithTrackTotalHits(true),
 	)
 
-	return nil, nil
+	defer res.Body.Close()
+
+	if err != nil {
+		log.Fatal("errors during the request", err)
+		return nil, err
+	}
+
+	if res.IsError() {
+		log.Fatal("errors parsing the response")
+	}
+
+	return res, nil
 }

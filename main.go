@@ -17,7 +17,7 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/posts", savePost).Methods(http.MethodPost)
 	router.HandleFunc("/api/posts/{id}", findById).Methods(http.MethodGet)
-	router.HandleFunc("/api/posts", findByCriteria).Methods(http.MethodGet)
+	router.HandleFunc("/api/posts/_search", findByCriteria).Methods(http.MethodPost)
 	log.Fatal(http.ListenAndServe(port, router))
 }
 

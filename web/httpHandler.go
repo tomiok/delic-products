@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/elastic/go-elasticsearch"
 	"github.com/gorilla/mux"
@@ -68,27 +69,25 @@ func (esHandler httpElastic) FindByCriteriaHandler(writer http.ResponseWriter, r
 	postApi := esHandler.api
 
 	reqBody, _ := ioutil.ReadAll(request.Body)
-	m := make(map[string] interface{})
-	_ = json.Unmarshal(reqBody, &m)
+	str := string(reqBody)
 
-	query, _ := json.Marshal(m)
-
-	log.Print(query)
-	res, err := postApi.FindByCriteria(string(query), *esHandler.esClient)
+	log.Print(str)
+	res, err := postApi.FindByCriteria(request.Body)
 
 	if err != nil {
 		log.Fatal("errors in the response", err)
 	}
 
 
-	jsonResponse := make(map[string]interface{})
+	/*jsonResponse := make(map[string]interface{})
 
 	body, _ := ioutil.ReadAll(res.Body)
 	_ = json.Unmarshal(body, &jsonResponse)
 
 	defer res.Body.Close()
-	httpResponse, _ := json.Marshal(jsonResponse)
+	httpResponse, _ := json.Marshal(re)*/
+	httpResponse, _ := json.Marshal(res)
 
 	writer.WriteHeader(http.StatusOK)
-	_, _ = writer.Write(httpResponse)
+	_, _ = writer.Write(bytes.NewBuffer(httpResponse).Bytes())
 }

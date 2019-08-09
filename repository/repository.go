@@ -4,7 +4,6 @@ import (
 	"github.com/elastic/go-elasticsearch"
 	"github.com/elastic/go-elasticsearch/esapi"
 	"go-delic-products/model"
-	"io"
 )
 
 type PostsRepo interface {
@@ -15,5 +14,5 @@ type PostsRepo interface {
 
 	FindById(id string, c elasticsearch.Client) (*esapi.Response, error)
 
-	FindByCriteria(criteria io.Reader, c elasticsearch.Client) (*esapi.Response, error)
+	FindByCriteria(criteria string, c elasticsearch.Client) (*esapi.Response, error)
 }

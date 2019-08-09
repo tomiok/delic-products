@@ -46,28 +46,49 @@ func (esHandler httpElastic) FindById(writer http.ResponseWriter, request *http.
 
 	res, err := postApi.FindById(id, *esHandler.esClient)
 
-	mapResponse := make(map[string]interface{})
 	if err != nil {
 		log.Fatal("errors in the response", err)
 	}
 
+	defer res.Body.Close()
+
+	jsonResponse := make(map[string]interface{})
+
 	body, _ := ioutil.ReadAll(res.Body)
 
-	_ = json.Unmarshal(body, &mapResponse)
+	_ = json.Unmarshal(body, &jsonResponse)
 
 	writer.WriteHeader(http.StatusOK)
 
-	jsonResponse, _ := json.Marshal(mapResponse)
-	_, _ = writer.Write(jsonResponse)
+	httpResponse, _ := json.Marshal(jsonResponse)
+	_, _ = writer.Write(httpResponse)
 }
 
 func (esHandler httpElastic) FindByCriteriaHandler(writer http.ResponseWriter, request *http.Request) {
-	requestBody, _ := ioutil.ReadAll(request.Body)
-	req := make(map[string]interface{})
-	_ = json.Unmarshal(requestBody, &req)
-
 	postApi := esHandler.api
 
+	reqBody, _ := ioutil.ReadAll(request.Body)
+	m := make(map[string] interface{})
+	_ = json.Unmarshal(reqBody, &m)
+
+	query, _ := json.Marshal(m)
+
+	log.Print(query)
+	res, err := postApi.FindByCriteria(string(query), *esHandler.esClient)
+
+	if err != nil {
+		log.Fatal("errors in the response", err)
+	}
 
 
+	jsonResponse := make(map[string]interface{})
+
+	body, _ := ioutil.ReadAll(res.Body)
+	_ = json.Unmarshal(body, &jsonResponse)
+
+	defer res.Body.Close()
+	httpResponse, _ := json.Marshal(jsonResponse)
+
+	writer.WriteHeader(http.StatusOK)
+	_, _ = writer.Write(httpResponse)
 }

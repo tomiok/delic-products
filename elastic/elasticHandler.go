@@ -1,6 +1,7 @@
 package elastic
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -8,7 +9,6 @@ import (
 	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/google/uuid"
 	"go-delic-products/model"
-	"io"
 	"log"
 	"strings"
 )
@@ -60,22 +60,19 @@ func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*esapi.Respon
 		log.Fatal("error parsing response")
 	}
 
-	defer res.Body.Close()
 	return res, nil
 }
 
-func (p *PostElastic) FindByCriteria(criteria io.Reader, c elasticsearch.Client) (*esapi.Response, error) {
+func (p *PostElastic) FindByCriteria(criteria string, c elasticsearch.Client) (*esapi.Response, error) {
+	var buf bytes.Buffer
+	_ = json.NewEncoder(&buf).Encode(criteria)
 	res , err := c.Search(
 		c.Search.WithContext(context.Background()),
-		c.Search.WithBody(criteria),
-		c.Search.WithIndex(),
+		c.Search.WithBody(&buf),
 		c.Search.WithPretty(),
-		c.Search.WithStats(),
-		c.Search.WithRestTotalHitsAsInt(true),
 		c.Search.WithTrackTotalHits(true),
+		c.Search.WithIndex("shared_post"),
 	)
-
-	defer res.Body.Close()
 
 	if err != nil {
 		log.Fatal("errors during the request", err)

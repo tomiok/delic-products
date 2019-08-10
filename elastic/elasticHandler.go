@@ -17,6 +17,7 @@ import (
 
 type PostElastic struct {
 	post model.Post
+	Client elasticsearch.Client
 }
 
 func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, error) {
@@ -29,7 +30,7 @@ func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, er
 		Refresh:    "true",
 	}
 
-	res, err := request.Do(context.Background(), &c)
+	res, err := request.Do(context.Background(), &p.Client)
 
 	if err != nil {
 		log.Fatal(err)

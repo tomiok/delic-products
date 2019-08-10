@@ -14,14 +14,12 @@ import (
 
 func NewElasticWebHandler(esClient *elasticsearch.Client) HttpElastic {
 	return HttpElastic{
-		api:      &elastic.PostElastic{},
-		esClient: esClient,
+		api:      &elastic.PostElastic{Client: *esClient},
 	}
 }
 
 type HttpElastic struct {
 	api      *elastic.PostElastic
-	esClient *elasticsearch.Client
 }
 
 func (esHandler HttpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +30,7 @@ func (esHandler HttpElastic) SaveHandler(w http.ResponseWriter, r *http.Request)
 
 	postApi := esHandler.api
 
-	idSaved, _ := postApi.Save(&post, *esHandler.esClient)
+	idSaved, _ := postApi.Save(&post, esHandler.api.Client)
 
 	idResponse := model.IdResponse{Id: idSaved}
 
@@ -45,7 +43,7 @@ func (esHandler HttpElastic) FindById(writer http.ResponseWriter, request *http.
 	id := mux.Vars(request)["id"]
 	postApi := esHandler.api
 
-	res, err := postApi.FindById(id, *esHandler.esClient)
+	res, err := postApi.FindById(id, esHandler.api.Client)
 
 	if err != nil {
 		log.Fatal("errors in the response", err)

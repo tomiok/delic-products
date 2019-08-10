@@ -12,19 +12,19 @@ import (
 	"net/http"
 )
 
-func NewElasticWebHandler(esClient *elasticsearch.Client) httpElastic {
-	return httpElastic{
+func NewElasticWebHandler(esClient *elasticsearch.Client) HttpElastic {
+	return HttpElastic{
 		api:      &elastic.PostElastic{},
 		esClient: esClient,
 	}
 }
 
-type httpElastic struct {
+type HttpElastic struct {
 	api      *elastic.PostElastic
 	esClient *elasticsearch.Client
 }
 
-func (esHandler httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
+func (esHandler HttpElastic) SaveHandler(w http.ResponseWriter, r *http.Request) {
 	var post model.Post
 
 	body, _ := ioutil.ReadAll(r.Body)
@@ -41,7 +41,7 @@ func (esHandler httpElastic) SaveHandler(w http.ResponseWriter, r *http.Request)
 	_, _ = w.Write(res)
 }
 
-func (esHandler httpElastic) FindById(writer http.ResponseWriter, request *http.Request) {
+func (esHandler HttpElastic) FindById(writer http.ResponseWriter, request *http.Request) {
 	id := mux.Vars(request)["id"]
 	postApi := esHandler.api
 
@@ -65,29 +65,15 @@ func (esHandler httpElastic) FindById(writer http.ResponseWriter, request *http.
 	_, _ = writer.Write(httpResponse)
 }
 
-func (esHandler httpElastic) FindByCriteriaHandler(writer http.ResponseWriter, request *http.Request) {
+func (esHandler HttpElastic) FindByCriteriaHandler(writer http.ResponseWriter, request *http.Request) {
 	postApi := esHandler.api
 
-	reqBody, _ := ioutil.ReadAll(request.Body)
-	str := string(reqBody)
-
-	log.Print(str)
 	res, err := postApi.FindByCriteria(request.Body)
 
 	if err != nil {
 		log.Fatal("errors in the response", err)
 	}
 
-
-	/*jsonResponse := make(map[string]interface{})
-
-	body, _ := ioutil.ReadAll(res.Body)
-	_ = json.Unmarshal(body, &jsonResponse)
-
-	defer res.Body.Close()
-	httpResponse, _ := json.Marshal(re)*/
-	httpResponse, _ := json.Marshal(res)
-
 	writer.WriteHeader(http.StatusOK)
-	_, _ = writer.Write(bytes.NewBuffer(httpResponse).Bytes())
+	_, _ = writer.Write(bytes.NewBuffer([]byte(res)).Bytes())
 }

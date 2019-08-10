@@ -15,12 +15,12 @@ type PostsRepo interface {
 
 	/**
 	In this example, I use the client and return the response from the elastic-go lib
-	 */
+	*/
 	FindById(id string, c elasticsearch.Client) (*esapi.Response, error)
 
 	/**
 	Here I use the web client from Go, the query DSL coming from the client - perhaps is no the better idea
 	but fits OK for an example, cURLs for free.
-	 */
+	*/
 	FindByCriteria(criteria io.Reader) (string, error)
 }

@@ -20,7 +20,7 @@ type PostElastic struct {
 	Client elasticsearch.Client
 }
 
-func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, error) {
+func (p *PostElastic) Save(post *model.Post) (string, error) {
 
 	jsonPost, _ := json.Marshal(post)
 	request := esapi.IndexRequest{
@@ -50,10 +50,10 @@ func (p *PostElastic) Save(post *model.Post, c elasticsearch.Client) (string, er
 
 }
 
-func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*esapi.Response, error) {
+func (p *PostElastic) FindById(id string) (*esapi.Response, error) {
 	req := esapi.GetRequest{Index: p.post.GetIndexName(), DocumentID: id}
 
-	res, err := req.Do(context.Background(), &c)
+	res, err := req.Do(context.Background(), &p.Client)
 
 	if err != nil {
 		return nil, err

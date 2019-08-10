@@ -68,22 +68,19 @@ func (p *PostElastic) FindById(id string, c elasticsearch.Client) (*esapi.Respon
 func (p *PostElastic) FindByCriteria(criteria io.Reader) (string, error) {
 	url := "http://localhost:9200/shared_post/_search"
 
-	//r := "{\n    \"query\": {\n        \"match\" : {\n            \"title\" : \"FBI with coffee\"\n        }\n    }\n}"
-	//payload := strings.NewReader(r)
-
 	request, _ := ioutil.ReadAll(criteria)
 
 	query := string(request)
-	//fmt.Printf("%v", r)
-	//fmt.Printf("%v", string(request))
 
 	req, _ := http.NewRequest("POST", url, strings.NewReader(query))
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("cache-control", "no-cache")
-	req.Header.Add("Postman-Token", "f7a22433-456b-4e81-87c4-67e959e2a034")
+	res, err := http.DefaultClient.Do(req)
 
-	res, _ := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
 
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)

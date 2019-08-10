@@ -71,7 +71,7 @@ func (esHandler HttpElastic) FindByCriteriaHandler(writer http.ResponseWriter, r
 	res, err := postApi.FindByCriteria(request.Body)
 
 	if err != nil {
-		log.Fatal("errors in the response", err)
+		panic(err)
 	}
 
 	writer.WriteHeader(http.StatusOK)

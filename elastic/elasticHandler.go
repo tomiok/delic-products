@@ -16,7 +16,7 @@ import (
 )
 
 type PostElastic struct {
-	post model.Post
+	post   model.Post
 	Client elasticsearch.Client
 }
 
@@ -60,7 +60,7 @@ func (p *PostElastic) FindById(id string) (*esapi.Response, error) {
 	}
 
 	if res.IsError() {
-		log.Fatal("error parsing response")
+		panic(res.Status())
 	}
 
 	return res, nil
@@ -69,11 +69,11 @@ func (p *PostElastic) FindById(id string) (*esapi.Response, error) {
 func (p *PostElastic) FindByCriteria(criteria io.Reader) (string, error) {
 	url := "http://localhost:9200/shared_post/_search"
 
-	request, _ := ioutil.ReadAll(criteria)
+	/*request, _ := ioutil.ReadAll(criteria)
 
-	query := string(request)
+	query := string(request)*/
 
-	req, _ := http.NewRequest("POST", url, strings.NewReader(query))
+	req, _ := http.NewRequest("POST", url, criteria)
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("cache-control", "no-cache")

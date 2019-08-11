@@ -47,7 +47,6 @@ func (p *PostElastic) Save(post *model.Post) (string, error) {
 		}
 		return r["_id"].(string), nil
 	}
-
 }
 
 func (p *PostElastic) FindById(id string) (*esapi.Response, error) {
@@ -68,10 +67,6 @@ func (p *PostElastic) FindById(id string) (*esapi.Response, error) {
 
 func (p *PostElastic) FindByCriteria(criteria io.Reader) (string, error) {
 	url := "http://localhost:9200/shared_post/_search"
-
-	/*request, _ := ioutil.ReadAll(criteria)
-
-	query := string(request)*/
 
 	req, _ := http.NewRequest("POST", url, criteria)
 
